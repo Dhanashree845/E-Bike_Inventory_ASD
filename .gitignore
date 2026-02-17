@@ -1,0 +1,20 @@
+# Root node modules
+node_modules/
+
+# Backend
+Backend/node_modules/
+Backend/.env
+
+# Frontend
+ebike-frontend/node_modules/
+ebike-frontend/dist/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
