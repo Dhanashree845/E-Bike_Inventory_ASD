@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Suppliers – E-Bike Inventory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <div class="app-layout">
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <h2>⚡ InnovaBike</h2><span>Admin Panel</span>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">Main</div>
+                <div class="nav-item" onclick="location.href='dashboard.html'"><span class="icon">📊</span> Dashboard
+                </div>
+                <div class="nav-item" onclick="location.href='bikes.html'"><span class="icon">🚲</span> Bikes</div>
+                <div class="nav-item" onclick="location.href='customers.html'"><span class="icon">👥</span> Customers
+                </div>
+                <div class="nav-section-label">Operations</div>
+                <div class="nav-item active"><span class="icon">🏭</span> Suppliers</div>
+                <div class="nav-item" onclick="location.href='purchases.html'"><span class="icon">📦</span> Purchases
+                </div>
+                <div class="nav-item" onclick="location.href='sales.html'"><span class="icon">💰</span> Sales</div>
+                <div class="nav-section-label">Reports</div>
+                <div class="nav-item" onclick="location.href='reports.html'"><span class="icon">📈</span> Reports</div>
+                <div class="nav-item" onclick="location.href='stock-history.html'"><span class="icon">🗂️</span> Stock
+                    History</div>
+            </nav>
+            <div class="sidebar-footer"><button class="logout-btn" onclick="logout()">🚪 Logout</button></div>
+        </aside>
+        <div class="main-content">
+            <div class="topbar">
+                <span class="topbar-title">Supplier Management</span>
+                <div class="topbar-right"><span class="topbar-role" id="topbar-role"></span></div>
+            </div>
+            <div class="page-content">
+                <div class="page-header">
+                    <h1>🏭 Suppliers</h1>
+                    <button class="btn btn-primary" onclick="openAddModal()">+ Add Supplier</button>
+                </div>
+                <div class="card">
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Address</th>
+                                    <th>Products Supplied</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="suppliersBody">
+                                <tr>
+                                    <td colspan="6" class="loading">Loading…</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="supplierModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add Supplier</h3>
+                <button class="modal-close" onclick="closeModal('supplierModal')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group"><label>Name *</label><input id="f-name" placeholder="Supplier Co." /></div>
+                    <div class="form-group"><label>Email *</label><input type="email" id="f-email"
+                            placeholder="supplier@email.com" /></div>
+                    <div class="form-group"><label>Phone *</label><input id="f-phone" placeholder="+91 9876543210" />
+                    </div>
+                    <div class="form-group"><label>Address</label><input id="f-address" placeholder="City, State" />
+                    </div>
+                    <div class="form-group" style="grid-column:1/-1">
+                        <label>Products Supplied (comma separated)</label>
+                        <input id="f-products" placeholder="Thunder X1, Storm Pro, City Rider" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('supplierModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveSupplier()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+    <script src="api.js"></script>
+    <script>
+        requireAuth(['ADMIN']);
+        initTopbar();
+
+        let allSuppliers = [], editId = null;
+
+        async function loadSuppliers() {
+            try {
+                const res = await API.get('/suppliers');
+                allSuppliers = res.data || [];
+                renderSuppliers(allSuppliers);
+            } catch (e) { toast('Failed to load suppliers', 'error'); }
+        }
+
+        function renderSuppliers(list) {
+            const body = document.getElementById('suppliersBody');
+            if (!list.length) {
+                body.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon">🏭</div><p>No suppliers found</p></div></td></tr>';
+                return;
+            }
+            body.innerHTML = list.map(s => `
+      <tr>
+        <td><strong>${s.name}</strong></td>
+        <td>${s.email}</td>
+        <td>${s.phone}</td>
+        <td>${s.address || '—'}</td>
+        <td>${(s.productsSupplied || []).join(', ') || '—'}</td>
+        <td>
+          <button class="btn btn-warning btn-sm" onclick="editSupplier('${s._id}')">✏️ Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteSupplier('${s._id}')">🗑️</button>
+        </td>
+      </tr>`).join('');
+        }
+
+        function openAddModal() {
+            editId = null;
+            document.getElementById('modalTitle').textContent = 'Add Supplier';
+            ['f-name', 'f-email', 'f-phone', 'f-address', 'f-products'].forEach(id => document.getElementById(id).value = '');
+            openModal('supplierModal');
+        }
+
+        function editSupplier(id) {
+            const s = allSuppliers.find(x => x._id === id);
+            if (!s) return;
+            editId = id;
+            document.getElementById('modalTitle').textContent = 'Edit Supplier';
+            document.getElementById('f-name').value = s.name;
+            document.getElementById('f-email').value = s.email;
+            document.getElementById('f-phone').value = s.phone;
+            document.getElementById('f-address').value = s.address || '';
+            document.getElementById('f-products').value = (s.productsSupplied || []).join(', ');
+            openModal('supplierModal');
+        }
+
+        async function saveSupplier() {
+            const body = {
+                name: document.getElementById('f-name').value.trim(),
+                email: document.getElementById('f-email').value.trim(),
+                phone: document.getElementById('f-phone').value.trim(),
+                address: document.getElementById('f-address').value.trim(),
+                productsSupplied: document.getElementById('f-products').value.split(',').map(p => p.trim()).filter(Boolean),
+            };
+            if (!body.name || !body.email || !body.phone) { toast('Name, email and phone are required', 'error'); return; }
+            try {
+                if (editId) { await API.put(`/suppliers/${editId}`, body); toast('Supplier updated!'); }
+                else { await API.post('/suppliers', body); toast('Supplier added!'); }
+                closeModal('supplierModal');
+                loadSuppliers();
+            } catch (e) { toast(e.message, 'error'); }
+        }
+
+        async function deleteSupplier(id) {
+            if (!confirm('Delete this supplier?')) return;
+            try { await API.delete(`/suppliers/${id}`); toast('Supplier deleted'); loadSuppliers(); }
+            catch (e) { toast(e.message, 'error'); }
+        }
+
+        loadSuppliers();
+    </script>
+</body>
+
+</html>

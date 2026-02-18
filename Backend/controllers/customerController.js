@@ -37,7 +37,66 @@ const getAllCustomers = async (req, res) => {
     }
 };
 
+// PUT /api/customers/:id
+const updateCustomer = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const updatedCustomer = await Customer.findByIdAndUpdate(
+            id,
+            req.body,
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedCustomer) {
+            return res.status(404).json({
+                success: false,
+                message: "Customer not found",
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Customer updated successfully",
+            data: updatedCustomer,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+// DELETE /api/customers/:id
+const deleteCustomer = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const deletedCustomer = await Customer.findByIdAndDelete(id);
+
+        if (!deletedCustomer) {
+            return res.status(404).json({
+                success: false,
+                message: "Customer not found",
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Customer deleted successfully",
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
 module.exports = {
     createCustomer,
     getAllCustomers,
+    updateCustomer,
+    deleteCustomer,
 };

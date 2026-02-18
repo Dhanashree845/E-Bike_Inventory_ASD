@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Staff Dashboard – E-Bike Inventory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <div class="app-layout">
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <h2>⚡ InnovaBike</h2><span>Staff Panel</span>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">Main</div>
+                <div class="nav-item active"><span class="icon">📊</span> Dashboard</div>
+                <div class="nav-item" onclick="location.href='bikes.html'"><span class="icon">🚲</span> Bikes</div>
+                <div class="nav-item" onclick="location.href='customers.html'"><span class="icon">👥</span> Customers
+                </div>
+                <div class="nav-item" onclick="location.href='sales.html'"><span class="icon">💰</span> Sales</div>
+            </nav>
+            <div class="sidebar-footer"><button class="logout-btn" onclick="logout()">🚪 Logout</button></div>
+        </aside>
+        <div class="main-content">
+            <div class="topbar">
+                <span class="topbar-title">Staff Dashboard</span>
+                <div class="topbar-right"><span class="topbar-role" id="topbar-role"></span></div>
+            </div>
+            <div class="page-content">
+                <div class="page-header">
+                    <h1>Welcome, Staff 👋</h1>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-label">Total Bikes</div>
+                        <div class="stat-card-value" id="s-bikes">—</div>
+                    </div>
+                    <div class="stat-card green">
+                        <div class="stat-card-label">Total Customers</div>
+                        <div class="stat-card-value" id="s-customers">—</div>
+                    </div>
+                    <div class="stat-card cyan">
+                        <div class="stat-card-label">My Sales Today</div>
+                        <div class="stat-card-value" id="s-sales-today">—</div>
+                    </div>
+                    <div class="stat-card yellow">
+                        <div class="stat-card-label">Total Sales</div>
+                        <div class="stat-card-value" id="s-sales">—</div>
+                    </div>
+                </div>
+
+                <!-- Available Bikes -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Available Bikes</h2>
+                        <a href="bikes.html" class="btn btn-outline btn-sm">View All</a>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Bike ID</th>
+                                    <th>Name</th>
+                                    <th>Brand</th>
+                                    <th>Price</th>
+                                    <th>Stock</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bikesBody">
+                                <tr>
+                                    <td colspan="6" class="loading">Loading…</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Recent Sales -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Recent Sales</h2>
+                        <a href="sales.html" class="btn btn-outline btn-sm">View All</a>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Customer</th>
+                                    <th>Bike ID</th>
+                                    <th>Qty</th>
+                                    <th>Total</th>
+                                    <th>Payment</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="salesBody">
+                                <tr>
+                                    <td colspan="6" class="loading">Loading…</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+    <script src="api.js"></script>
+    <script>
+        requireAuth(['STAFF']);
+        initTopbar();
+
+        async function loadDashboard() {
+            try {
+                const [bikesRes, customersRes, salesRes] = await Promise.all([
+                    API.get('/bikes'), API.get('/customers'), API.get('/sales')
+                ]);
+                const bikes = bikesRes.data || [];
+                const customers = customersRes.data || [];
+                const sales = salesRes.data || [];
+
+                const today = new Date().toDateString();
+                const todaySales = sales.filter(s => new Date(s.saleDate || s.createdAt).toDateString() === today);
+
+                document.getElementById('s-bikes').textContent = bikes.length;
+                document.getElementById('s-customers').textContent = customers.length;
+                document.getElementById('s-sales-today').textContent = todaySales.length;
+                document.getElementById('s-sales').textContent = sales.length;
+
+                // Bikes table
+                const bikesBody = document.getElementById('bikesBody');
+                const activeBikes = bikes.filter(b => b.status === 'active').slice(0, 8);
+                bikesBody.innerHTML = activeBikes.length ? activeBikes.map(b => `
+        <tr>
+          <td><strong>${b.bikeId}</strong></td>
+          <td>${b.name}</td>
+          <td>${b.brand}</td>
+          <td>${fmtCurrency(b.price)}</td>
+          <td><span class="badge ${b.stock <= b.minimumStock ? 'badge-danger' : 'badge-success'}">${b.stock}</span></td>
+          <td><span class="badge badge-success">${b.status}</span></td>
+        </tr>`).join('') : '<tr><td colspan="6" style="text-align:center;padding:20px;color:#64748b">No bikes available</td></tr>';
+
+                // Sales table
+                const salesBody = document.getElementById('salesBody');
+                const recentSales = sales.slice(0, 5);
+                salesBody.innerHTML = recentSales.length ? recentSales.map(s => `
+        <tr>
+          <td>${s.customer}</td>
+          <td>${s.bikeId}</td>
+          <td>${s.quantity}</td>
+          <td>${fmtCurrency(s.totalAmount)}</td>
+          <td><span class="badge ${s.paymentStatus === 'PAID' ? 'badge-success' : 'badge-warning'}">${s.paymentStatus}</span></td>
+          <td>${fmtDate(s.saleDate || s.createdAt)}</td>
+        </tr>`).join('') : '<tr><td colspan="6" style="text-align:center;padding:20px;color:#64748b">No sales yet</td></tr>';
+
+            } catch (e) { toast('Failed to load dashboard', 'error'); }
+        }
+
+        loadDashboard();
+    </script>
+</body>
+
+</html>

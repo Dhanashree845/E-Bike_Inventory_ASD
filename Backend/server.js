@@ -25,7 +25,7 @@ const purchaseRoutes = require("./routes/purchaseRoutes");
 const saleRoutes = require("./routes/saleRoutes");
 const customerRoutes = require("./routes/customerRoutes");
 const reportRoutes = require("./routes/reportRoutes");
-
+const stockHistoryRoutes = require("./routes/stockHistoryRoutes");
 
 app.use("/api/auth",authRoutes);
 app.use("/api/suppliers", supplierRoutes);
@@ -33,7 +33,7 @@ app.use("/api/purchases", purchaseRoutes);
 app.use("/api/sales", saleRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/reports", reportRoutes);
-
+app.use("/api/stockhistory", stockHistoryRoutes);
 
 connectDB();
 

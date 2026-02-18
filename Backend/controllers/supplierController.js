@@ -49,7 +49,7 @@ const updateSupplier = async (req, res) => {
         );
 
         if (!updatedSupplier) {
-            return res.status(404).jsosn({
+            return res.status(404).json({
                 success: false,
                 message: "Supplier not found",
             });
