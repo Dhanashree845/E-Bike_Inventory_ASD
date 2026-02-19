@@ -17,6 +17,8 @@ function Customers() {
   const [customers, setCustomers] = useState([]);
   const [editId, setEditId] = useState(null);
 
+  const role = localStorage.getItem("role"); // ✅ Get role
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -52,7 +54,8 @@ function Customers() {
     }
 
     try {
-      if (editId) {
+      // ✅ Only ADMIN can update
+      if (editId && role === "ADMIN") {
         await axios.put(`/customers/${editId}`, formData);
         setEditId(null);
       } else {
@@ -70,11 +73,13 @@ function Customers() {
       fetchCustomers();
     } catch (error) {
       console.error("Save Customer Error:", error);
-      alert("Email might already exist.");
+      alert(error.response?.data?.message || "Error saving customer");
     }
   };
 
   const handleEdit = (customer) => {
+    if (role !== "ADMIN") return; // ❌ Prevent staff edit
+
     setEditId(customer._id);
     setFormData({
       name: customer.name,
@@ -86,6 +91,8 @@ function Customers() {
   };
 
   const handleDelete = async (id) => {
+    if (role !== "ADMIN") return; // ❌ Prevent staff delete
+
     try {
       await axios.delete(`/customers/${id}`);
       fetchCustomers();
@@ -143,7 +150,9 @@ function Customers() {
           />
 
           <Button variant="contained" onClick={handleSubmit}>
-            {editId ? "Update Customer" : "Add Customer"}
+            {editId && role === "ADMIN"
+              ? "Update Customer"
+              : "Add Customer"}
           </Button>
         </Box>
       </Paper>
@@ -158,7 +167,9 @@ function Customers() {
               <TableCell>Phone</TableCell>
               <TableCell>Address</TableCell>
               <TableCell>Bike Model</TableCell>
-              <TableCell>Action</TableCell>
+
+              {/* ✅ Show Action column only for ADMIN */}
+              {role === "ADMIN" && <TableCell>Action</TableCell>}
             </TableRow>
           </TableHead>
 
@@ -171,23 +182,33 @@ function Customers() {
                   <TableCell>{customer.phone}</TableCell>
                   <TableCell>{customer.address || "-"}</TableCell>
                   <TableCell>{customer.bikeModel || "-"}</TableCell>
-                  <TableCell>
-                    <Button size="small" onClick={() => handleEdit(customer)}>
-                      Edit
-                    </Button>
-                    <Button
-                      size="small"
-                      color="error"
-                      onClick={() => handleDelete(customer._id)}
-                    >
-                      Delete
-                    </Button>
-                  </TableCell>
+
+                  {/* ✅ Only ADMIN sees Edit/Delete */}
+                  {role === "ADMIN" && (
+                    <TableCell>
+                      <Button
+                        size="small"
+                        onClick={() => handleEdit(customer)}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        size="small"
+                        color="error"
+                        onClick={() => handleDelete(customer._id)}
+                      >
+                        Delete
+                      </Button>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6} align="center">
+                <TableCell
+                  colSpan={role === "ADMIN" ? 6 : 5}
+                  align="center"
+                >
                   No Customers Found
                 </TableCell>
               </TableRow>

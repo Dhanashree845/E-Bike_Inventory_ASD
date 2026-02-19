@@ -11,7 +11,7 @@ const {
 } = require("../controllers/customerController");
 
 // CREATE CUSTOMER
-router.post("/", isAuth, isAdmin, createCustomer);
+router.post("/", isAuth,createCustomer);
 
 // GET ALL CUSTOMERS
 router.get("/", isAuth, getAllCustomers);
