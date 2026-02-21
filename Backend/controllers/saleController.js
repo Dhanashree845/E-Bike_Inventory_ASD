@@ -4,9 +4,6 @@ const StockHistory = require("../models/StockHistory");
 const Customer = require("../models/Customer");
 
 
-// =======================
-// CREATE SALE
-// =======================
 const createSale = async (req, res) => {
   try {
     const {
@@ -18,11 +15,11 @@ const createSale = async (req, res) => {
       paymentMethod
     } = req.body;
 
-    // Convert to numbers (important!)
+    
     const qty = Number(quantity);
     const price = Number(sellingPrice);
 
-    // Find bike
+    
     const bike = await Bike.findOne({ bikeId });
 
     if (!bike) {
@@ -52,11 +49,11 @@ const createSale = async (req, res) => {
 
     const savedSale = await sale.save();
 
-    // Update bike stock
+    
     bike.stock -= qty;
     await bike.save();
 
-    // Record stock history
+    
     await StockHistory.create({
       bikeId,
       quantity: qty,
@@ -65,7 +62,7 @@ const createSale = async (req, res) => {
       referenceId: savedSale._id
     });
 
-    // Add sale to customer history (if exists)
+    
     const existingCustomer = await Customer.findOne({ name: customer });
 
     if (existingCustomer) {
@@ -89,9 +86,6 @@ const createSale = async (req, res) => {
 };
 
 
-// =======================
-// GET ALL SALES
-// =======================
 const getSales = async (req, res) => {
   try {
     const sales = await Sale.find().sort({ createdAt: -1 });

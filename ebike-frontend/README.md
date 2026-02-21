@@ -1,16 +1,87 @@
-# React + Vite
+# Cloud-Based Inventory Management System (E-Bike) – Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the frontend application of the Cloud-Based Inventory Management System developed using React.js. It provides a responsive and interactive user interface for managing and viewing e-bike inventory data.
 
-Currently, two official plugins are available:
+The frontend communicates with the backend REST APIs to perform authentication, CRUD operations, and dashboard analytics.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## Overview
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+The frontend handles:
 
-## Expanding the ESLint configuration
+- User Registration and Login
+- JWT-based authentication handling
+- Role-based UI rendering (Admin/User)
+- Displaying E-Bike inventory
+- Adding, editing, and deleting products (Admin)
+- Image upload interface
+- Dashboard statistics display
+- Protected routes
+- Error handling and notifications
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+The application ensures secure communication with the backend using JWT tokens stored in localStorage.
+
+---
+
+## Technologies Used
+
+- React.js
+- React Router DOM
+- Axios
+- Context API (State Management)
+- CSS
+- JWT Authentication Handling
+
+---
+
+## Authentication Handling
+
+- Stores JWT token after login
+- Sends Authorization header in API requests
+- Redirects unauthorized users
+- Admin-only UI components
+- Logout clears token and session
+
+---
+
+## Features Implemented
+
+Admin Features:
+- Add new E-Bike
+- Upload image
+- Update product details
+- Delete product
+- View dashboard analytics
+- Monitor stock levels
+
+User Features:
+- Register
+- Login
+- View product list
+- View product details
+
+Dashboard:
+- Total products
+- Total stock
+- Total revenue
+- Low stock count
+
+---
+
+## Testing
+
+- Axios API testing
+- Protected route verification
+- Console debugging
+- Manual UI validation
+
+---
+
+## Developed By
+
+Dhanashree Kamble
+Shraddha Jadhav
+Mayuri Bharate
+
+B.E. Computer Engineering

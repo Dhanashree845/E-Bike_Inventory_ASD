@@ -2,7 +2,7 @@ const Bike = require("../models/Bike");
 const Sale = require("../models/Sale");
 const Purchase = require("../models/Purchase");
 
-// STOCK Summary
+
 const stockSummary = async (req, res) => {
     try {
         const bikes = await Bike.find();
@@ -27,7 +27,7 @@ const stockSummary = async (req, res) => {
     }
 };
 
-// SALES Report (Date Range)
+
 const salesReport = async (req, res) => {
     try {
         const { from, to } = req.query;
@@ -66,7 +66,7 @@ const salesReport = async (req, res) => {
     }
 };
 
-// PURCHASE Report
+
 const purchaseReport = async (req, res) => {
     try {
         const purchases = await Purchase.find();
@@ -89,7 +89,7 @@ const purchaseReport = async (req, res) => {
     }
 };
 
-// LOW STOCK Products
+
 const lowStockReport = async (req, res) => {
     try {
         const lowStockBikes = await Bike.find({

@@ -1,6 +1,5 @@
 const Supplier = require("../models/Supplier");
 
-// CREATE supplier
 const createSupplier = async (req, res) => {
     try {
         const supplier = new Supplier(req.body);
@@ -19,7 +18,6 @@ const createSupplier = async (req, res) => {
     }
 };
 
-// GET all suppliers
 const getAllSuppliers = async (req, res) => {
     try {
         const suppliers = await Supplier.find();
@@ -37,7 +35,6 @@ const getAllSuppliers = async (req, res) => {
     }
 };
 
-// UPDATE supplier by ID
 const updateSupplier = async (req, res) => {
     try {
         const { id } = req.params;
@@ -68,7 +65,6 @@ const updateSupplier = async (req, res) => {
     }
 };
 
-// DELETE supplier by ID
 const deleteSupplier = async (req, res) => {
     try {
         const { id } = req.params;

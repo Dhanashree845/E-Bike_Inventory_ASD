@@ -17,7 +17,7 @@ function Customers() {
   const [customers, setCustomers] = useState([]);
   const [editId, setEditId] = useState(null);
 
-  const role = localStorage.getItem("role"); // ✅ Get role
+  const role = localStorage.getItem("role"); 
 
   const [formData, setFormData] = useState({
     name: "",
@@ -54,7 +54,7 @@ function Customers() {
     }
 
     try {
-      // ✅ Only ADMIN can update
+      
       if (editId && role === "ADMIN") {
         await axios.put(`/customers/${editId}`, formData);
         setEditId(null);
@@ -78,7 +78,7 @@ function Customers() {
   };
 
   const handleEdit = (customer) => {
-    if (role !== "ADMIN") return; // ❌ Prevent staff edit
+    if (role !== "ADMIN") return; 
 
     setEditId(customer._id);
     setFormData({
@@ -91,7 +91,7 @@ function Customers() {
   };
 
   const handleDelete = async (id) => {
-    if (role !== "ADMIN") return; // ❌ Prevent staff delete
+    if (role !== "ADMIN") return; 
 
     try {
       await axios.delete(`/customers/${id}`);
@@ -168,7 +168,7 @@ function Customers() {
               <TableCell>Address</TableCell>
               <TableCell>Bike Model</TableCell>
 
-              {/* ✅ Show Action column only for ADMIN */}
+              {/*  Show Action column only for ADMIN */}
               {role === "ADMIN" && <TableCell>Action</TableCell>}
             </TableRow>
           </TableHead>
@@ -183,7 +183,7 @@ function Customers() {
                   <TableCell>{customer.address || "-"}</TableCell>
                   <TableCell>{customer.bikeModel || "-"}</TableCell>
 
-                  {/* ✅ Only ADMIN sees Edit/Delete */}
+                  {/* Only ADMIN sees Edit/Delete */}
                   {role === "ADMIN" && (
                     <TableCell>
                       <Button

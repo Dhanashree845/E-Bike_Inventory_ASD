@@ -58,7 +58,7 @@ function Bikes() {
     try {
       let data;
 
-      // Only use FormData if image exists
+      
       if (image) {
         data = new FormData();
         Object.keys(formData).forEach((key) => {
@@ -66,7 +66,7 @@ function Bikes() {
         });
         data.append("image", image);
       } else {
-        //  Otherwise send normal JSON
+        
         data = formData;
       }
 
@@ -77,7 +77,7 @@ function Bikes() {
         await axios.post("/bikes", data);
       }
 
-      // Reset form
+      
       setFormData({
         bikeId: "",
         name: "",

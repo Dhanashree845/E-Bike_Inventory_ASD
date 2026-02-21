@@ -1,12 +1,9 @@
 const Customer = require("../models/Customer");
 
 
-// =========================
-// CREATE CUSTOMER
-// =========================
 const createCustomer = async (req, res) => {
     try {
-        // Check if email already exists
+        
         const existingCustomer = await Customer.findOne({ email: req.body.email });
 
         if (existingCustomer) {
@@ -33,10 +30,6 @@ const createCustomer = async (req, res) => {
     }
 };
 
-
-// =========================
-// GET ALL CUSTOMERS
-// =========================
 const getAllCustomers = async (req, res) => {
     try {
         const customers = await Customer.find().populate("purchaseHistory");
@@ -55,10 +48,6 @@ const getAllCustomers = async (req, res) => {
     }
 };
 
-
-// =========================
-// UPDATE CUSTOMER
-// =========================
 const updateCustomer = async (req, res) => {
     try {
         const customer = await Customer.findById(req.params.id);
@@ -70,7 +59,7 @@ const updateCustomer = async (req, res) => {
             });
         }
 
-        // If email is being changed → check duplicate
+        
         if (req.body.email && req.body.email !== customer.email) {
             const existingEmail = await Customer.findOne({ email: req.body.email });
 
@@ -102,10 +91,6 @@ const updateCustomer = async (req, res) => {
     }
 };
 
-
-// =========================
-// DELETE CUSTOMER
-// =========================
 const deleteCustomer = async (req, res) => {
     try {
         const customer = await Customer.findByIdAndDelete(req.params.id);

@@ -2,14 +2,12 @@ const Purchase = require("../models/Purchase");
 const Bike = require("../models/Bike");
 const StockHistory = require("../models/StockHistory");
 
-// ===============================
-// CREATE PURCHASE
-// ===============================
+
 const createPurchase = async (req, res) => {
   try {
     const { supplierName, bikeId, quantity, price } = req.body;
 
-    // Basic validation
+    
     if (!supplierName || !bikeId || !quantity || !price) {
       return res.status(400).json({
         success: false,
@@ -17,7 +15,7 @@ const createPurchase = async (req, res) => {
       });
     }
 
-    // Check if bike exists
+   
     const bike = await Bike.findOne({ bikeId });
 
     if (!bike) {
@@ -29,7 +27,7 @@ const createPurchase = async (req, res) => {
 
     const totalAmount = Number(quantity) * Number(price);
 
-    // Save purchase record
+    
     const purchase = new Purchase({
       supplierName,
       bikeId,
@@ -40,7 +38,7 @@ const createPurchase = async (req, res) => {
 
     const savedPurchase = await purchase.save();
 
-    // Increase bike stock
+    
     bike.stock = (bike.stock || 0) + Number(quantity);
     await bike.save();
 
@@ -69,9 +67,6 @@ const createPurchase = async (req, res) => {
   }
 };
 
-// ===============================
-// GET ALL PURCHASES
-// ===============================
 const getPurchases = async (req, res) => {
   try {
     const purchases = await Purchase.find().sort({ createdAt: -1 });

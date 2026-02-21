@@ -41,7 +41,7 @@ function Login() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        backgroundImage: `url(${bgImage})`,   // ✅ using your local image
+        backgroundImage: `url(${bgImage})`,   
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
