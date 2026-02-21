@@ -4,6 +4,12 @@ const StockHistory = require("../models/StockHistory");
 const Customer = require("../models/Customer");
 
 
+<<<<<<< HEAD
+=======
+// =======================
+// CREATE SALE
+// =======================
+>>>>>>> a3ff7a53c53dd7e0b7aa5b9f75ef0d59099b9b84
 const createSale = async (req, res) => {
   try {
     const {
@@ -15,11 +21,19 @@ const createSale = async (req, res) => {
       paymentMethod
     } = req.body;
 
+<<<<<<< HEAD
     
     const qty = Number(quantity);
     const price = Number(sellingPrice);
 
     
+=======
+    // Convert to numbers (important!)
+    const qty = Number(quantity);
+    const price = Number(sellingPrice);
+
+    // Find bike
+>>>>>>> a3ff7a53c53dd7e0b7aa5b9f75ef0d59099b9b84
     const bike = await Bike.findOne({ bikeId });
 
     if (!bike) {
@@ -49,11 +63,19 @@ const createSale = async (req, res) => {
 
     const savedSale = await sale.save();
 
+<<<<<<< HEAD
     
     bike.stock -= qty;
     await bike.save();
 
     
+=======
+    // Update bike stock
+    bike.stock -= qty;
+    await bike.save();
+
+    // Record stock history
+>>>>>>> a3ff7a53c53dd7e0b7aa5b9f75ef0d59099b9b84
     await StockHistory.create({
       bikeId,
       quantity: qty,
@@ -62,7 +84,11 @@ const createSale = async (req, res) => {
       referenceId: savedSale._id
     });
 
+<<<<<<< HEAD
     
+=======
+    // Add sale to customer history (if exists)
+>>>>>>> a3ff7a53c53dd7e0b7aa5b9f75ef0d59099b9b84
     const existingCustomer = await Customer.findOne({ name: customer });
 
     if (existingCustomer) {
@@ -86,6 +112,12 @@ const createSale = async (req, res) => {
 };
 
 
+<<<<<<< HEAD
+=======
+// =======================
+// GET ALL SALES
+// =======================
+>>>>>>> a3ff7a53c53dd7e0b7aa5b9f75ef0d59099b9b84
 const getSales = async (req, res) => {
   try {
     const sales = await Sale.find().sort({ createdAt: -1 });

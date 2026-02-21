@@ -1,5 +1,9 @@
 const Supplier = require("../models/Supplier");
 
+<<<<<<< HEAD
+=======
+// CREATE supplier
+>>>>>>> a3ff7a53c53dd7e0b7aa5b9f75ef0d59099b9b84
 const createSupplier = async (req, res) => {
     try {
         const supplier = new Supplier(req.body);
@@ -18,6 +22,10 @@ const createSupplier = async (req, res) => {
     }
 };
 
+<<<<<<< HEAD
+=======
+// GET all suppliers
+>>>>>>> a3ff7a53c53dd7e0b7aa5b9f75ef0d59099b9b84
 const getAllSuppliers = async (req, res) => {
     try {
         const suppliers = await Supplier.find();
@@ -35,6 +43,10 @@ const getAllSuppliers = async (req, res) => {
     }
 };
 
+<<<<<<< HEAD
+=======
+// UPDATE supplier by ID
+>>>>>>> a3ff7a53c53dd7e0b7aa5b9f75ef0d59099b9b84
 const updateSupplier = async (req, res) => {
     try {
         const { id } = req.params;
@@ -46,7 +58,11 @@ const updateSupplier = async (req, res) => {
         );
 
         if (!updatedSupplier) {
+<<<<<<< HEAD
             return res.status(404).jsosn({
+=======
+            return res.status(404).json({
+>>>>>>> a3ff7a53c53dd7e0b7aa5b9f75ef0d59099b9b84
                 success: false,
                 message: "Supplier not found",
             });
@@ -65,6 +81,10 @@ const updateSupplier = async (req, res) => {
     }
 };
 
+<<<<<<< HEAD
+=======
+// DELETE supplier by ID
+>>>>>>> a3ff7a53c53dd7e0b7aa5b9f75ef0d59099b9b84
 const deleteSupplier = async (req, res) => {
     try {
         const { id } = req.params;

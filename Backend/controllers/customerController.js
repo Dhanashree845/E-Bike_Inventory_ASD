@@ -1,5 +1,6 @@
 const Customer = require("../models/Customer");
 
+<<<<<<< HEAD
 
 const createCustomer = async (req, res) => {
     try {
@@ -13,6 +14,11 @@ const createCustomer = async (req, res) => {
             });
         }
 
+=======
+// POST /api/customers
+const createCustomer = async (req, res) => {
+    try {
+>>>>>>> a3ff7a53c53dd7e0b7aa5b9f75ef0d59099b9b84
         const customer = new Customer(req.body);
         const savedCustomer = await customer.save();
 
@@ -21,7 +27,10 @@ const createCustomer = async (req, res) => {
             message: "Customer created successfully",
             data: savedCustomer,
         });
+<<<<<<< HEAD
 
+=======
+>>>>>>> a3ff7a53c53dd7e0b7aa5b9f75ef0d59099b9b84
     } catch (error) {
         res.status(500).json({
             success: false,
@@ -30,6 +39,10 @@ const createCustomer = async (req, res) => {
     }
 };
 
+<<<<<<< HEAD
+=======
+// GET /api/customers
+>>>>>>> a3ff7a53c53dd7e0b7aa5b9f75ef0d59099b9b84
 const getAllCustomers = async (req, res) => {
     try {
         const customers = await Customer.find().populate("purchaseHistory");
@@ -39,7 +52,10 @@ const getAllCustomers = async (req, res) => {
             count: customers.length,
             data: customers,
         });
+<<<<<<< HEAD
 
+=======
+>>>>>>> a3ff7a53c53dd7e0b7aa5b9f75ef0d59099b9b84
     } catch (error) {
         res.status(500).json({
             success: false,
@@ -48,6 +64,7 @@ const getAllCustomers = async (req, res) => {
     }
 };
 
+<<<<<<< HEAD
 const updateCustomer = async (req, res) => {
     try {
         const customer = await Customer.findById(req.params.id);
@@ -73,16 +90,38 @@ const updateCustomer = async (req, res) => {
 
         const updatedCustomer = await Customer.findByIdAndUpdate(
             req.params.id,
+=======
+// PUT /api/customers/:id
+const updateCustomer = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const updatedCustomer = await Customer.findByIdAndUpdate(
+            id,
+>>>>>>> a3ff7a53c53dd7e0b7aa5b9f75ef0d59099b9b84
             req.body,
             { new: true, runValidators: true }
         );
 
+<<<<<<< HEAD
+=======
+        if (!updatedCustomer) {
+            return res.status(404).json({
+                success: false,
+                message: "Customer not found",
+            });
+        }
+
+>>>>>>> a3ff7a53c53dd7e0b7aa5b9f75ef0d59099b9b84
         res.status(200).json({
             success: true,
             message: "Customer updated successfully",
             data: updatedCustomer,
         });
+<<<<<<< HEAD
 
+=======
+>>>>>>> a3ff7a53c53dd7e0b7aa5b9f75ef0d59099b9b84
     } catch (error) {
         res.status(500).json({
             success: false,
@@ -91,6 +130,7 @@ const updateCustomer = async (req, res) => {
     }
 };
 
+<<<<<<< HEAD
 const deleteCustomer = async (req, res) => {
     try {
         const customer = await Customer.findByIdAndDelete(req.params.id);
@@ -99,14 +139,32 @@ const deleteCustomer = async (req, res) => {
             return res.status(404).json({
                 success: false,
                 message: "Customer not found"
+=======
+// DELETE /api/customers/:id
+const deleteCustomer = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const deletedCustomer = await Customer.findByIdAndDelete(id);
+
+        if (!deletedCustomer) {
+            return res.status(404).json({
+                success: false,
+                message: "Customer not found",
+>>>>>>> a3ff7a53c53dd7e0b7aa5b9f75ef0d59099b9b84
             });
         }
 
         res.status(200).json({
             success: true,
+<<<<<<< HEAD
             message: "Customer deleted successfully"
         });
 
+=======
+            message: "Customer deleted successfully",
+        });
+>>>>>>> a3ff7a53c53dd7e0b7aa5b9f75ef0d59099b9b84
     } catch (error) {
         res.status(500).json({
             success: false,
@@ -115,10 +173,17 @@ const deleteCustomer = async (req, res) => {
     }
 };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> a3ff7a53c53dd7e0b7aa5b9f75ef0d59099b9b84
 module.exports = {
     createCustomer,
     getAllCustomers,
     updateCustomer,
     deleteCustomer,
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> a3ff7a53c53dd7e0b7aa5b9f75ef0d59099b9b84

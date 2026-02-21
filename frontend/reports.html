@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reports – E-Bike Inventory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        .report-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+
+        .monthly-table {
+            margin-top: 24px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-layout">
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <h2>⚡ InnovaBike</h2><span>Admin Panel</span>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">Main</div>
+                <div class="nav-item" onclick="location.href='dashboard.html'"><span class="icon">📊</span> Dashboard
+                </div>
+                <div class="nav-item" onclick="location.href='bikes.html'"><span class="icon">🚲</span> Bikes</div>
+                <div class="nav-item" onclick="location.href='customers.html'"><span class="icon">👥</span> Customers
+                </div>
+                <div class="nav-section-label">Operations</div>
+                <div class="nav-item" onclick="location.href='suppliers.html'"><span class="icon">🏭</span> Suppliers
+                </div>
+                <div class="nav-item" onclick="location.href='purchases.html'"><span class="icon">📦</span> Purchases
+                </div>
+                <div class="nav-item" onclick="location.href='sales.html'"><span class="icon">💰</span> Sales</div>
+                <div class="nav-section-label">Reports</div>
+                <div class="nav-item active"><span class="icon">📈</span> Reports</div>
+                <div class="nav-item" onclick="location.href='stock-history.html'"><span class="icon">🗂️</span> Stock
+                    History</div>
+            </nav>
+            <div class="sidebar-footer"><button class="logout-btn" onclick="logout()">🚪 Logout</button></div>
+        </aside>
+        <div class="main-content">
+            <div class="topbar">
+                <span class="topbar-title">Reports & Analytics</span>
+                <div class="topbar-right"><span class="topbar-role" id="topbar-role"></span></div>
+            </div>
+            <div class="page-content">
+                <div class="page-header">
+                    <h1>📈 Reports</h1>
+                </div>
+
+                <!-- Summary Cards -->
+                <div class="stats-grid" id="reportStats">
+                    <div class="stat-card green">
+                        <div class="stat-card-label">Total Revenue</div>
+                        <div class="stat-card-value" id="r-revenue">—</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-label">Total Sales</div>
+                        <div class="stat-card-value" id="r-sales">—</div>
+                    </div>
+                    <div class="stat-card yellow">
+                        <div class="stat-card-label">Total Purchases</div>
+                        <div class="stat-card-value" id="r-purchases">—</div>
+                    </div>
+                    <div class="stat-card cyan">
+                        <div class="stat-card-label">Total Customers</div>
+                        <div class="stat-card-value" id="r-customers">—</div>
+                    </div>
+                    <div class="stat-card red">
+                        <div class="stat-card-label">Low Stock Bikes</div>
+                        <div class="stat-card-value" id="r-lowstock">—</div>
+                    </div>
+                </div>
+
+                <!-- Monthly Revenue -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Monthly Revenue Breakdown</h2>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Month</th>
+                                    <th>Sales Count</th>
+                                    <th>Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody id="monthlyBody">
+                                <tr>
+                                    <td colspan="3" class="loading">Loading…</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Top Selling Bikes -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Top Selling Bikes</h2>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Bike ID</th>
+                                    <th>Units Sold</th>
+                                    <th>Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topBikesBody">
+                                <tr>
+                                    <td colspan="3" class="loading">Loading…</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+    <script src="api.js"></script>
+    <script>
+        requireAuth(['ADMIN']);
+        initTopbar();
+
+        async function loadReports() {
+            try {
+                const [salesRes, purchasesRes, customersRes, bikesRes] = await Promise.all([
+                    API.get('/sales'), API.get('/purchases'), API.get('/customers'), API.get('/bikes')
+                ]);
+                const sales = salesRes.data || [];
+                const purchases = purchasesRes.data || [];
+                const customers = customersRes.data || [];
+                const bikes = bikesRes.data || [];
+
+                const revenue = sales.reduce((s, x) => s + (x.totalAmount || 0), 0);
+                const lowStock = bikes.filter(b => b.stock <= b.minimumStock).length;
+
+                document.getElementById('r-revenue').textContent = fmtCurrency(revenue);
+                document.getElementById('r-sales').textContent = sales.length;
+                document.getElementById('r-purchases').textContent = purchases.length;
+                document.getElementById('r-customers').textContent = customers.length;
+                document.getElementById('r-lowstock').textContent = lowStock;
+
+                // Monthly breakdown
+                const monthly = {};
+                sales.forEach(s => {
+                    const d = new Date(s.saleDate || s.createdAt);
+                    const key = d.toLocaleString('default', { month: 'long', year: 'numeric' });
+                    if (!monthly[key]) monthly[key] = { count: 0, revenue: 0 };
+                    monthly[key].count++;
+                    monthly[key].revenue += s.totalAmount || 0;
+                });
+
+                const monthlyBody = document.getElementById('monthlyBody');
+                const monthKeys = Object.keys(monthly);
+                monthlyBody.innerHTML = monthKeys.length ? monthKeys.map(m => `
+        <tr>
+          <td>${m}</td>
+          <td>${monthly[m].count}</td>
+          <td><strong>${fmtCurrency(monthly[m].revenue)}</strong></td>
+        </tr>`).join('') : '<tr><td colspan="3" style="text-align:center;padding:20px;color:#64748b">No sales data</td></tr>';
+
+                // Top bikes
+                const bikeMap = {};
+                sales.forEach(s => {
+                    if (!bikeMap[s.bikeId]) bikeMap[s.bikeId] = { units: 0, revenue: 0 };
+                    bikeMap[s.bikeId].units += s.quantity || 0;
+                    bikeMap[s.bikeId].revenue += s.totalAmount || 0;
+                });
+                const topBikes = Object.entries(bikeMap).sort((a, b) => b[1].units - a[1].units).slice(0, 10);
+                const topBody = document.getElementById('topBikesBody');
+                topBody.innerHTML = topBikes.length ? topBikes.map(([id, d]) => `
+        <tr>
+          <td><strong>${id}</strong></td>
+          <td>${d.units}</td>
+          <td>${fmtCurrency(d.revenue)}</td>
+        </tr>`).join('') : '<tr><td colspan="3" style="text-align:center;padding:20px;color:#64748b">No sales data</td></tr>';
+
+            } catch (e) { toast('Failed to load reports', 'error'); }
+        }
+
+        loadReports();
+    </script>
+</body>
+
+</html>
