@@ -2,11 +2,7 @@ const Bike = require("../models/Bike");
 const Sale = require("../models/Sale");
 const Purchase = require("../models/Purchase");
 
-<<<<<<< HEAD
-
-=======
 // STOCK Summary
->>>>>>> a3ff7a53c53dd7e0b7aa5b9f75ef0d59099b9b84
 const stockSummary = async (req, res) => {
     try {
         const bikes = await Bike.find();
@@ -31,11 +27,7 @@ const stockSummary = async (req, res) => {
     }
 };
 
-<<<<<<< HEAD
-
-=======
 // SALES Report (Date Range)
->>>>>>> a3ff7a53c53dd7e0b7aa5b9f75ef0d59099b9b84
 const salesReport = async (req, res) => {
     try {
         const { from, to } = req.query;
@@ -74,11 +66,7 @@ const salesReport = async (req, res) => {
     }
 };
 
-<<<<<<< HEAD
-
-=======
 // PURCHASE Report
->>>>>>> a3ff7a53c53dd7e0b7aa5b9f75ef0d59099b9b84
 const purchaseReport = async (req, res) => {
     try {
         const purchases = await Purchase.find();
@@ -101,11 +89,7 @@ const purchaseReport = async (req, res) => {
     }
 };
 
-<<<<<<< HEAD
-
-=======
 // LOW STOCK Products
->>>>>>> a3ff7a53c53dd7e0b7aa5b9f75ef0d59099b9b84
 const lowStockReport = async (req, res) => {
     try {
         const lowStockBikes = await Bike.find({
